@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+
+# Build
+dist
+dist-ssr
+*.local
+
+# Environment (secrets — keep .env.example tracked if you add one)
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite
+.vite
+
+# Test / coverage
+coverage
+.nyc_output
+
+# Linters / formatters (cache)
+.eslintcache
+.prettiercache
+
+# Optional tooling
+.turbo
+.vercel
+*.pem
