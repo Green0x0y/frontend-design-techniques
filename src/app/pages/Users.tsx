@@ -1,0 +1,193 @@
+import { useState } from 'react';
+import { UserPlus, Mail, Shield, UserCheck, Trash2, Settings } from 'lucide-react';
+import { users as initialUsers } from '../data/mockData';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Avatar, AvatarFallback } from '../components/ui/avatar';
+import { toast } from 'sonner';
+
+export function Users() {
+  const [usersList, setUsersList] = useState(initialUsers);
+
+  const deleteUser = (id: string) => {
+    setUsersList((prev) => prev.filter((user) => user.id !== id));
+    toast.success('Użytkownik został usunięty');
+  };
+
+  const changeRole = (id: string, newRole: 'admin' | 'member') => {
+    setUsersList((prev) =>
+      prev.map((user) => (user.id === id ? { ...user, role: newRole } : user))
+    );
+    toast.success('Rola użytkownika została zmieniona');
+  };
+
+  return (
+    <div className="p-4 lg:p-8 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">Użytkownicy i role</h1>
+          <p className="text-slate-600">Zarządzaj dostępem do systemu inteligentnego domu</p>
+        </div>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="flex items-center gap-2">
+              <UserPlus className="w-4 h-4" />
+              Dodaj użytkownika
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Zaproś nowego użytkownika</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="user-name">Imię i nazwisko</Label>
+                <Input id="user-name" placeholder="np. Jan Kowalski" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-email">Adres email</Label>
+                <Input id="user-email" type="email" placeholder="jan@example.com" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-role">Rola</Label>
+                <Select defaultValue="member">
+                  <SelectTrigger id="user-role">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Administrator</SelectItem>
+                    <SelectItem value="member">Domownik</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                Użytkownik otrzyma zaproszenie na podany adres email z linkiem do aktywacji konta.
+              </div>
+              <Button className="w-full">
+                <Mail className="w-4 h-4 mr-2" />
+                Wyślij zaproszenie
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Role Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Shield className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-slate-900 mb-2">Administrator</h3>
+              <p className="text-sm text-slate-600 mb-3">
+                Pełny dostęp do wszystkich funkcji systemu, w tym zarządzanie użytkownikami, 
+                urządzeniami i ustawieniami bezpieczeństwa.
+              </p>
+              <div className="flex items-center gap-2 text-sm text-slate-700">
+                <UserCheck className="w-4 h-4" />
+                <span>
+                  {usersList.filter((u) => u.role === 'admin').length} administrator
+                  {usersList.filter((u) => u.role === 'admin').length !== 1 ? 'ów' : ''}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <UserCheck className="w-6 h-6 text-green-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-slate-900 mb-2">Domownik</h3>
+              <p className="text-sm text-slate-600 mb-3">
+                Dostęp do sterowania urządzeniami i scen. Brak możliwości zarządzania 
+                użytkownikami i modyfikacji ustawień systemowych.
+              </p>
+              <div className="flex items-center gap-2 text-sm text-slate-700">
+                <UserCheck className="w-4 h-4" />
+                <span>
+                  {usersList.filter((u) => u.role === 'member').length} domownik
+                  {usersList.filter((u) => u.role === 'member').length !== 1 ? 'ów' : ''}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Users List */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-6 border-b border-slate-200">
+          <h2 className="text-lg font-bold text-slate-900">Wszyscy użytkownicy</h2>
+        </div>
+
+        <div className="divide-y divide-slate-200">
+          {usersList.map((user) => (
+            <div key={user.id} className="p-6 hover:bg-slate-50 transition-colors">
+              <div className="flex items-center gap-4">
+                <Avatar className="w-12 h-12">
+                  <AvatarFallback className="bg-blue-600 text-white font-medium">
+                    {user.avatar}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-slate-900">{user.name}</h3>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        user.role === 'admin'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-green-100 text-green-700'
+                      }`}
+                    >
+                      {user.role === 'admin' ? 'Administrator' : 'Domownik'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-600">{user.email}</p>
+                </div>
+
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Select
+                    value={user.role}
+                    onValueChange={(value: 'admin' | 'member') => changeRole(user.id, value)}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Administrator</SelectItem>
+                      <SelectItem value="member">Domownik</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Button variant="ghost" size="sm">
+                    <Settings className="w-4 h-4" />
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => deleteUser(user.id)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
