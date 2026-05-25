@@ -3,6 +3,7 @@ import { Zap, Calendar } from 'lucide-react';
 import { energyData } from '../data/mockData';
 
 export function Statistics() {
+
   const totalEnergy = energyData.reduce((acc, curr) => acc + curr.energia, 0);
   const avgDaily = totalEnergy / energyData.length;
 

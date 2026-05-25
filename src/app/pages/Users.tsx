@@ -9,8 +9,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Avatar, AvatarFallback } from '../components/ui/avatar';
 import { toast } from 'sonner';
 
+function initialsFromName(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  if (parts.length === 1 && parts[0].length >= 2) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return (parts[0]?.[0] ?? '?').toUpperCase();
+}
+
 export function Users() {
   const [usersList, setUsersList] = useState(initialUsers);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserRole, setNewUserRole] = useState<'admin' | 'member'>('member');
 
   const deleteUser = (id: string) => {
     setUsersList((prev) => prev.filter((user) => user.id !== id));
@@ -24,6 +39,48 @@ export function Users() {
     toast.success('Rola użytkownika została zmieniona');
   };
 
+  const resetInviteForm = () => {
+    setNewUserName('');
+    setNewUserEmail('');
+    setNewUserRole('member');
+  };
+
+  const handleInviteUser = () => {
+    const name = newUserName.trim();
+    const email = newUserEmail.trim();
+    if (!name || !email) {
+      toast.error('Podaj imię i nazwisko oraz adres email');
+      return;
+    }
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailOk) {
+      toast.error('Podaj poprawny adres email');
+      return;
+    }
+    if (usersList.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
+      toast.error('Użytkownik z tym adresem już istnieje');
+      return;
+    }
+    const maxU = usersList.reduce((max, u) => {
+      const m = /^u(\d+)$/.exec(u.id);
+      return m ? Math.max(max, parseInt(m[1], 10)) : max;
+    }, 0);
+    const nextId = maxU > 0 ? `u${maxU + 1}` : `u${usersList.length + 1}`;
+    setUsersList((prev) => [
+      ...prev,
+      {
+        id: nextId,
+        name,
+        email,
+        role: newUserRole,
+        avatar: initialsFromName(name),
+      },
+    ]);
+    setInviteDialogOpen(false);
+    resetInviteForm();
+    toast.success('Użytkownik został dodany');
+  };
+
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto">
       {/* Header */}
@@ -33,7 +90,13 @@ export function Users() {
           <p className="text-slate-600">Zarządzaj dostępem do systemu inteligentnego domu</p>
         </div>
 
-        <Dialog>
+        <Dialog
+          open={inviteDialogOpen}
+          onOpenChange={(open) => {
+            setInviteDialogOpen(open);
+            if (!open) resetInviteForm();
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="flex items-center gap-2">
               <UserPlus className="w-4 h-4" />
@@ -47,15 +110,26 @@ export function Users() {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="user-name">Imię i nazwisko</Label>
-                <Input id="user-name" placeholder="np. Jan Kowalski" />
+                <Input
+                  id="user-name"
+                  placeholder="np. Jan Kowalski"
+                  value={newUserName}
+                  onChange={(e) => setNewUserName(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="user-email">Adres email</Label>
-                <Input id="user-email" type="email" placeholder="jan@example.com" />
+                <Input
+                  id="user-email"
+                  type="email"
+                  placeholder="jan@example.com"
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="user-role">Rola</Label>
-                <Select defaultValue="member">
+                <Select value={newUserRole} onValueChange={(v) => setNewUserRole(v as 'admin' | 'member')}>
                   <SelectTrigger id="user-role">
                     <SelectValue />
                   </SelectTrigger>
@@ -68,7 +142,7 @@ export function Users() {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
                 Użytkownik otrzyma zaproszenie na podany adres email z linkiem do aktywacji konta.
               </div>
-              <Button className="w-full">
+              <Button type="button" className="w-full" onClick={handleInviteUser}>
                 <Mail className="w-4 h-4 mr-2" />
                 Wyślij zaproszenie
               </Button>
