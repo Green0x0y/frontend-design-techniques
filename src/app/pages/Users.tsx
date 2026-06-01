@@ -1,13 +1,25 @@
-import { useState } from 'react';
-import { UserPlus, Mail, Shield, UserCheck, Trash2, Settings } from 'lucide-react';
-import { users as initialUsers } from '../data/mockData';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Avatar, AvatarFallback } from '../components/ui/avatar';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { UserPlus, Mail, Shield, UserCheck, Trash2 } from "lucide-react";
+import { users as initialUsers } from "../data/mockData";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { toast } from "sonner";
 
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -17,48 +29,48 @@ function initialsFromName(name: string): string {
   if (parts.length === 1 && parts[0].length >= 2) {
     return parts[0].slice(0, 2).toUpperCase();
   }
-  return (parts[0]?.[0] ?? '?').toUpperCase();
+  return (parts[0]?.[0] ?? "?").toUpperCase();
 }
 
 export function Users() {
   const [usersList, setUsersList] = useState(initialUsers);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
-  const [newUserName, setNewUserName] = useState('');
-  const [newUserEmail, setNewUserEmail] = useState('');
-  const [newUserRole, setNewUserRole] = useState<'admin' | 'member'>('member');
+  const [newUserName, setNewUserName] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [newUserRole, setNewUserRole] = useState<"admin" | "member">("member");
 
   const deleteUser = (id: string) => {
     setUsersList((prev) => prev.filter((user) => user.id !== id));
-    toast.success('Użytkownik został usunięty');
+    toast.success("Użytkownik został usunięty");
   };
 
-  const changeRole = (id: string, newRole: 'admin' | 'member') => {
+  const changeRole = (id: string, newRole: "admin" | "member") => {
     setUsersList((prev) =>
-      prev.map((user) => (user.id === id ? { ...user, role: newRole } : user))
+      prev.map((user) => (user.id === id ? { ...user, role: newRole } : user)),
     );
-    toast.success('Rola użytkownika została zmieniona');
+    toast.success("Rola użytkownika została zmieniona");
   };
 
   const resetInviteForm = () => {
-    setNewUserName('');
-    setNewUserEmail('');
-    setNewUserRole('member');
+    setNewUserName("");
+    setNewUserEmail("");
+    setNewUserRole("member");
   };
 
   const handleInviteUser = () => {
     const name = newUserName.trim();
     const email = newUserEmail.trim();
     if (!name || !email) {
-      toast.error('Podaj imię i nazwisko oraz adres email');
+      toast.error("Podaj imię i nazwisko oraz adres email");
       return;
     }
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!emailOk) {
-      toast.error('Podaj poprawny adres email');
+      toast.error("Podaj poprawny adres email");
       return;
     }
     if (usersList.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
-      toast.error('Użytkownik z tym adresem już istnieje');
+      toast.error("Użytkownik z tym adresem już istnieje");
       return;
     }
     const maxU = usersList.reduce((max, u) => {
@@ -78,7 +90,7 @@ export function Users() {
     ]);
     setInviteDialogOpen(false);
     resetInviteForm();
-    toast.success('Użytkownik został dodany');
+    toast.success("Użytkownik został dodany");
   };
 
   return (
@@ -86,8 +98,12 @@ export function Users() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Użytkownicy i role</h1>
-          <p className="text-slate-600">Zarządzaj dostępem do systemu inteligentnego domu</p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            Użytkownicy i role
+          </h1>
+          <p className="text-slate-600">
+            Zarządzaj dostępem do systemu inteligentnego domu
+          </p>
         </div>
 
         <Dialog
@@ -129,7 +145,10 @@ export function Users() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="user-role">Rola</Label>
-                <Select value={newUserRole} onValueChange={(v) => setNewUserRole(v as 'admin' | 'member')}>
+                <Select
+                  value={newUserRole}
+                  onValueChange={(v) => setNewUserRole(v as "admin" | "member")}
+                >
                   <SelectTrigger id="user-role">
                     <SelectValue />
                   </SelectTrigger>
@@ -140,9 +159,14 @@ export function Users() {
                 </Select>
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                Użytkownik otrzyma zaproszenie na podany adres email z linkiem do aktywacji konta.
+                Użytkownik otrzyma zaproszenie na podany adres email z linkiem
+                do aktywacji konta.
               </div>
-              <Button type="button" className="w-full" onClick={handleInviteUser}>
+              <Button
+                type="button"
+                className="w-full"
+                onClick={handleInviteUser}
+              >
                 <Mail className="w-4 h-4 mr-2" />
                 Wyślij zaproszenie
               </Button>
@@ -159,16 +183,21 @@ export function Users() {
               <Shield className="w-6 h-6 text-blue-600" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 mb-2">Administrator</h3>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                Administrator
+              </h3>
               <p className="text-sm text-slate-600 mb-3">
-                Pełny dostęp do wszystkich funkcji systemu, w tym zarządzanie użytkownikami, 
-                urządzeniami i ustawieniami bezpieczeństwa.
+                Pełny dostęp do wszystkich funkcji systemu, w tym zarządzanie
+                użytkownikami, urządzeniami i ustawieniami bezpieczeństwa.
               </p>
               <div className="flex items-center gap-2 text-sm text-slate-700">
                 <UserCheck className="w-4 h-4" />
                 <span>
-                  {usersList.filter((u) => u.role === 'admin').length} administrator
-                  {usersList.filter((u) => u.role === 'admin').length !== 1 ? 'ów' : ''}
+                  {usersList.filter((u) => u.role === "admin").length}{" "}
+                  administrator
+                  {usersList.filter((u) => u.role === "admin").length !== 1
+                    ? "ów"
+                    : ""}
                 </span>
               </div>
             </div>
@@ -183,14 +212,16 @@ export function Users() {
             <div className="flex-1">
               <h3 className="font-semibold text-slate-900 mb-2">Domownik</h3>
               <p className="text-sm text-slate-600 mb-3">
-                Dostęp do sterowania urządzeniami i scen. Brak możliwości zarządzania 
-                użytkownikami i modyfikacji ustawień systemowych.
+                Dostęp do sterowania urządzeniami i scen. Brak możliwości
+                zarządzania użytkownikami i modyfikacji ustawień systemowych.
               </p>
               <div className="flex items-center gap-2 text-sm text-slate-700">
                 <UserCheck className="w-4 h-4" />
                 <span>
-                  {usersList.filter((u) => u.role === 'member').length} domownik
-                  {usersList.filter((u) => u.role === 'member').length !== 1 ? 'ów' : ''}
+                  {usersList.filter((u) => u.role === "member").length} domownik
+                  {usersList.filter((u) => u.role === "member").length !== 1
+                    ? "ów"
+                    : ""}
                 </span>
               </div>
             </div>
@@ -201,12 +232,17 @@ export function Users() {
       {/* Users List */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-6 border-b border-slate-200">
-          <h2 className="text-lg font-bold text-slate-900">Wszyscy użytkownicy</h2>
+          <h2 className="text-lg font-bold text-slate-900">
+            Wszyscy użytkownicy
+          </h2>
         </div>
 
         <div className="divide-y divide-slate-200">
           {usersList.map((user) => (
-            <div key={user.id} className="p-6 hover:bg-slate-50 transition-colors">
+            <div
+              key={user.id}
+              className="p-6 hover:bg-slate-50 transition-colors"
+            >
               <div className="flex items-center gap-4">
                 <Avatar className="w-12 h-12">
                   <AvatarFallback className="bg-blue-600 text-white font-medium">
@@ -216,15 +252,17 @@ export function Users() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-slate-900">{user.name}</h3>
+                    <h3 className="font-semibold text-slate-900">
+                      {user.name}
+                    </h3>
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        user.role === 'admin'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-green-100 text-green-700'
+                        user.role === "admin"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-green-100 text-green-700"
                       }`}
                     >
-                      {user.role === 'admin' ? 'Administrator' : 'Domownik'}
+                      {user.role === "admin" ? "Administrator" : "Domownik"}
                     </span>
                   </div>
                   <p className="text-sm text-slate-600">{user.email}</p>
@@ -233,7 +271,9 @@ export function Users() {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <Select
                     value={user.role}
-                    onValueChange={(value: 'admin' | 'member') => changeRole(user.id, value)}
+                    onValueChange={(value: "admin" | "member") =>
+                      changeRole(user.id, value)
+                    }
                   >
                     <SelectTrigger className="w-40">
                       <SelectValue />
@@ -243,10 +283,6 @@ export function Users() {
                       <SelectItem value="member">Domownik</SelectItem>
                     </SelectContent>
                   </Select>
-
-                  <Button variant="ghost" size="sm">
-                    <Settings className="w-4 h-4" />
-                  </Button>
 
                   <Button
                     variant="ghost"
