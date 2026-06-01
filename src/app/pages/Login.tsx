@@ -1,34 +1,47 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router';
-import { useAuth } from '../contexts/AuthContext';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Home, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '../components/ui/alert';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Home, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
+import { auth } from "../../firebase";
 
 export function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!email || !password) {
-      setError('Proszę wypełnić wszystkie pola');
+      setError("Proszę wypełnić wszystkie pola");
       return;
     }
 
-    const success = login(email, password);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+
+      navigate("/");
+    } catch {
+      setError("Nieprawidłowy email lub hasło");
+    }
     if (success) {
-      navigate('/');
+      navigate("/");
     } else {
-      setError('Nieprawidłowy email lub hasło');
+      setError("Nieprawidłowy email lub hasło");
     }
   };
 
@@ -54,7 +67,7 @@ export function Login() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -65,7 +78,7 @@ export function Login() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Hasło</Label>
               <Input
@@ -82,7 +95,7 @@ export function Login() {
             </Button>
 
             <div className="text-center text-sm text-gray-600">
-              Nie masz konta?{' '}
+              Nie masz konta?{" "}
               <Link to="/register" className="text-indigo-600 hover:underline">
                 Zarejestruj się
               </Link>

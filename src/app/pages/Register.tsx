@@ -1,51 +1,69 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router';
-import { useAuth } from '../contexts/AuthContext';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Home, AlertCircle, CheckCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '../components/ui/alert';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Home, AlertCircle, CheckCircle } from "lucide-react";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
+import { auth } from "../../firebase";
+import { updateProfile } from "firebase/auth";
 
 export function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setSuccess(false);
 
     if (!name || !email || !password || !confirmPassword) {
-      setError('Proszę wypełnić wszystkie pola');
+      setError("Proszę wypełnić wszystkie pola");
       return;
     }
 
     if (password.length < 6) {
-      setError('Hasło musi mieć co najmniej 6 znaków');
+      setError("Hasło musi mieć co najmniej 6 znaków");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Hasła nie są identyczne');
+      setError("Hasła nie są identyczne");
       return;
     }
 
-    const registered = register(email, password, name);
-    if (registered) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+
+      await updateProfile(userCredential.user, {
+        displayName: name,
+      });
+
       setSuccess(true);
+
       setTimeout(() => {
-        navigate('/login');
+        navigate("/login");
       }, 2000);
-    } else {
-      setError('Ten email jest już zarejestrowany');
+    } catch (error) {
+      setError("Ten email jest już zarejestrowany");
     }
   };
 
@@ -80,7 +98,7 @@ export function Register() {
                 </AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="name">Imię i nazwisko</Label>
               <Input
@@ -104,7 +122,7 @@ export function Register() {
                 disabled={success}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Hasło</Label>
               <Input
@@ -134,7 +152,7 @@ export function Register() {
             </Button>
 
             <div className="text-center text-sm text-gray-600">
-              Masz już konto?{' '}
+              Masz już konto?{" "}
               <Link to="/login" className="text-indigo-600 hover:underline">
                 Zaloguj się
               </Link>

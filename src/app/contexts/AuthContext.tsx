@@ -1,22 +1,18 @@
 import {
   createContext,
   useContext,
-  useState,
   useEffect,
+  useState,
   ReactNode,
 } from "react";
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
+import { User, onAuthStateChanged, signOut } from "firebase/auth";
+
+import { auth } from "../../firebase";
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => boolean;
-  register: (email: string, password: string, name: string) => boolean;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -25,64 +21,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const savedUser = localStorage.getItem("currentUser");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
+
+    return unsubscribe;
   }, []);
 
-  const register = (email: string, password: string, name: string): boolean => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-    if (users.some((u: any) => u.email === email)) {
-      return false;
-    }
-
-    const newUser = {
-      id: Math.random().toString(36).substr(2, 9),
-      email,
-      password,
-      name,
-    };
-
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-
-    return true;
+  const logout = async () => {
+    await signOut(auth);
   };
 
-  const login = (email: string, password: string): boolean => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const foundUser = users.find(
-      (u: any) => u.email === email && u.password === password,
-    );
-
-    if (foundUser) {
-      const userData = {
-        id: foundUser.id,
-        email: foundUser.email,
-        name: foundUser.name,
-      };
-      setUser(userData);
-      localStorage.setItem("currentUser", JSON.stringify(userData));
-      return true;
-    }
-
-    return false;
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("currentUser");
-  };
+  if (loading) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        login,
-        register,
         logout,
         isAuthenticated: !!user,
       }}
@@ -94,8 +55,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
   }
+
   return context;
 }
