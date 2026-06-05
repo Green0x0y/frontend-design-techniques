@@ -13,8 +13,14 @@ import {
 import { Home, AlertCircle, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 
-import { auth } from "../../firebase";
+import {
+  auth,
+  firebaseConfigError,
+  isFirebaseConfigured,
+  trackEvent,
+} from "../../firebase";
 import { updateProfile } from "firebase/auth";
 
 export function Register() {
@@ -46,6 +52,11 @@ export function Register() {
       return;
     }
 
+    if (!auth || !isFirebaseConfigured) {
+      setError(firebaseConfigError ?? "Firebase nie jest skonfigurowany");
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -57,13 +68,44 @@ export function Register() {
         displayName: name,
       });
 
+      void trackEvent("sign_up", { method: "email_password" });
+
       setSuccess(true);
 
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      setError("Ten email jest już zarejestrowany");
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case "auth/configuration-not-found":
+            setError(
+              "Brak konfiguracji Firebase Authentication. Sprawdź, czy włączono Authentication i metodę Email/Password oraz czy dane w pliku .env.local są z tego samego projektu."
+            );
+            break;
+          case "auth/email-already-in-use":
+            setError("Ten email jest już zarejestrowany");
+            break;
+          case "auth/invalid-email":
+            setError("Podano nieprawidłowy adres email");
+            break;
+          case "auth/operation-not-allowed":
+            setError("Rejestracja email/hasło nie jest włączona w Firebase Authentication");
+            break;
+          case "auth/weak-password":
+            setError("Hasło jest zbyt słabe");
+            break;
+          case "auth/network-request-failed":
+            setError("Błąd sieci. Sprawdź połączenie i spróbuj ponownie");
+            break;
+          default:
+            setError(`Nie udało się utworzyć konta (${error.code})`);
+            break;
+        }
+        return;
+      }
+
+      setError("Nie udało się utworzyć konta. Spróbuj ponownie");
     }
   };
 
@@ -87,6 +129,15 @@ export function Register() {
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {!isFirebaseConfigured && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  {firebaseConfigError ?? "Firebase nie jest skonfigurowany"}
+                </AlertDescription>
               </Alert>
             )}
 

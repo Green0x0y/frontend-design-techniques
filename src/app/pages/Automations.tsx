@@ -134,90 +134,11 @@ export function Automations() {
 
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Automatyzacje i sceny</h1>
           <p className="text-slate-600">Twórz sceny i reguły automatyzacji dla swojego domu</p>
         </div>
-
-        <Dialog
-          open={sceneDialogOpen}
-          onOpenChange={(open) => {
-            setSceneDialogOpen(open);
-            if (!open) resetSceneForm();
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Nowa scena
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Utwórz nową scenę</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="scene-name">Nazwa sceny</Label>
-                <Input
-                  id="scene-name"
-                  placeholder="np. Wieczór filmowy"
-                  value={newSceneName}
-                  onChange={(e) => setNewSceneName(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="scene-description">Opis</Label>
-                <Input
-                  id="scene-description"
-                  placeholder="Krótki opis sceny"
-                  value={newSceneDescription}
-                  onChange={(e) => setNewSceneDescription(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="scene-icon">Ikona</Label>
-                <Select value={newSceneIcon} onValueChange={setNewSceneIcon}>
-                  <SelectTrigger id="scene-icon">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Moon">Księżyc</SelectItem>
-                    <SelectItem value="Sun">Słońce</SelectItem>
-                    <SelectItem value="Home">Dom</SelectItem>
-                    <SelectItem value="Film">Film</SelectItem>
-                    <SelectItem value="LogOut">Wyjście</SelectItem>
-                    <SelectItem value="Zap">Błyskawica</SelectItem>
-                    <SelectItem value="Shield">Tarcza</SelectItem>
-                    <SelectItem value="Leaf">Liść</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Wybierz urządzenia</Label>
-                <div className="space-y-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3">
-                  {devicesCatalog.map((d) => (
-                    <div key={d.id} className="flex items-center justify-between gap-2">
-                      <span className="text-sm">
-                        {d.room} — {d.name}
-                      </span>
-                      <Switch
-                        checked={!!sceneDeviceIds[d.id]}
-                        onCheckedChange={(checked) =>
-                          setSceneDeviceIds((prev) => ({ ...prev, [d.id]: checked }))
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <Button type="button" className="w-full" onClick={handleCreateScene}>
-                Utwórz scenę
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -227,6 +148,87 @@ export function Automations() {
         </TabsList>
 
         <TabsContent value="scenes" className="space-y-6">
+          <div className="flex justify-end">
+            <Dialog
+              open={sceneDialogOpen}
+              onOpenChange={(open) => {
+                setSceneDialogOpen(open);
+                if (!open) resetSceneForm();
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Nowa scena
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Utwórz nową scenę</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="scene-name">Nazwa sceny</Label>
+                    <Input
+                      id="scene-name"
+                      placeholder="np. Wieczór filmowy"
+                      value={newSceneName}
+                      onChange={(e) => setNewSceneName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="scene-description">Opis</Label>
+                    <Input
+                      id="scene-description"
+                      placeholder="Krótki opis sceny"
+                      value={newSceneDescription}
+                      onChange={(e) => setNewSceneDescription(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="scene-icon">Ikona</Label>
+                    <Select value={newSceneIcon} onValueChange={setNewSceneIcon}>
+                      <SelectTrigger id="scene-icon">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Moon">Księżyc</SelectItem>
+                        <SelectItem value="Sun">Słońce</SelectItem>
+                        <SelectItem value="Home">Dom</SelectItem>
+                        <SelectItem value="Film">Film</SelectItem>
+                        <SelectItem value="LogOut">Wyjście</SelectItem>
+                        <SelectItem value="Zap">Błyskawica</SelectItem>
+                        <SelectItem value="Shield">Tarcza</SelectItem>
+                        <SelectItem value="Leaf">Liść</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Wybierz urządzenia</Label>
+                    <div className="space-y-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3">
+                      {devicesCatalog.map((d) => (
+                        <div key={d.id} className="flex items-center justify-between gap-2">
+                          <span className="text-sm">
+                            {d.room} — {d.name}
+                          </span>
+                          <Switch
+                            checked={!!sceneDeviceIds[d.id]}
+                            onCheckedChange={(checked) =>
+                              setSceneDeviceIds((prev) => ({ ...prev, [d.id]: checked }))
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <Button type="button" className="w-full" onClick={handleCreateScene}>
+                    Utwórz scenę
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {scenesList.map((scene) => {
               const Icon = getIconComponent(scene.icon);

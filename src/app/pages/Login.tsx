@@ -14,7 +14,12 @@ import { Home, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
-import { auth } from "../../firebase";
+import {
+  auth,
+  firebaseConfigError,
+  isFirebaseConfigured,
+  trackEvent,
+} from "../../firebase";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -31,16 +36,18 @@ export function Login() {
       return;
     }
 
+    if (!auth || !isFirebaseConfigured) {
+      setError(firebaseConfigError ?? "Firebase nie jest skonfigurowany");
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
 
+      void trackEvent("login", { method: "email_password" });
+
       navigate("/");
     } catch {
-      setError("Nieprawidłowy email lub hasło");
-    }
-    if (success) {
-      navigate("/");
-    } else {
       setError("Nieprawidłowy email lub hasło");
     }
   };
@@ -65,6 +72,15 @@ export function Login() {
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {!isFirebaseConfigured && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  {firebaseConfigError ?? "Firebase nie jest skonfigurowany"}
+                </AlertDescription>
               </Alert>
             )}
 

@@ -10,6 +10,7 @@ import { Users } from './pages/Users';
 import { Notifications } from './pages/Notifications';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { NotFound } from './pages/NotFound';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -38,5 +39,9 @@ export const router = createBrowserRouter([
       { path: 'users', Component: Users },
       { path: 'notifications', Component: Notifications },
     ],
+  },
+  {
+    path: '*',
+    Component: NotFound,
   },
 ]);
