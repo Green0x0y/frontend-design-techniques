@@ -10,6 +10,10 @@ import {
   ThermometerSun,
   Droplet,
   Gauge,
+  Sparkles,
+  Feather,
+  Zap,
+  CircleGauge,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -18,6 +22,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
+import { Label } from "../components/ui/label";
 import {
   Select,
   SelectContent,
@@ -25,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Label } from "../components/ui/label";
 import { Slider } from "../components/ui/slider";
 import { toast } from "sonner";
 import {
@@ -173,7 +177,7 @@ export function Appliances() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Robot Vacuum */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col">
           <div className="p-6 border-b border-slate-200">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -205,15 +209,15 @@ export function Appliances() {
             </div>
           </div>
 
-          <div className="p-6">
-            <Tabs defaultValue="control">
+          <div className="p-6 flex flex-1 flex-col">
+            <Tabs defaultValue="control" className="flex flex-1 flex-col">
               <TabsList className="mb-6">
                 <TabsTrigger value="control">Sterowanie</TabsTrigger>
                 <TabsTrigger value="map">Mapa</TabsTrigger>
                 <TabsTrigger value="schedule">Harmonogram</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="control" className="space-y-6">
+              <TabsContent value="control" className="flex flex-1 flex-col space-y-6">
                 {/* Battery */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -239,46 +243,64 @@ export function Appliances() {
                 </div>
 
                 {/* Mode Selection */}
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <Label htmlFor="vacuum-mode">Tryb sprzątania</Label>
-                  <Select value={vacuumMode} onValueChange={setVacuumMode}>
-                    <SelectTrigger id="vacuum-mode">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="quiet">Cichy</SelectItem>
-                      <SelectItem value="normal">Normalny</SelectItem>
-                      <SelectItem value="turbo">Turbo</SelectItem>
-                      <SelectItem value="max">Maksymalny</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { value: "quiet", label: "Cichy", icon: Feather },
+                      { value: "normal", label: "Normalny", icon: Sparkles },
+                      { value: "turbo", label: "Turbo", icon: Zap },
+                      { value: "max", label: "Max", icon: CircleGauge },
+                    ].map((mode) => {
+                      const ModeIcon = mode.icon;
+
+                      return (
+                        <Button
+                          key={mode.value}
+                          type="button"
+                          variant="outline"
+                          onClick={() => setVacuumMode(mode.value)}
+                          className={`min-h-24 py-5 flex flex-col items-center justify-center gap-2 border-2 transition-all duration-200 ${
+                            vacuumMode === mode.value
+                              ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm"
+                              : "border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50/60"
+                          }`}
+                        >
+                          <ModeIcon className="w-5 h-5 shrink-0" />
+                          <span className="text-sm font-semibold leading-none">
+                            {mode.label}
+                          </span>
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Control Buttons */}
-                <div className="space-y-2">
+                <div className="mt-auto space-y-2 pt-4">
                   {vacuumStatus === "cleaning" ? (
                     <Button
                       onClick={stopVacuum}
                       variant="destructive"
-                      className="w-full"
+                      className="w-full h-10"
                     >
                       <Pause className="w-4 h-4 mr-2" />
                       Zatrzymaj sprzątanie
                     </Button>
                   ) : (
-                    <Button onClick={startVacuum} className="w-full">
+                    <Button onClick={startVacuum} className="w-full h-10">
                       <Play className="w-4 h-4 mr-2" />
                       Rozpocznij sprzątanie
                     </Button>
                   )}
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full h-10">
                     Wróć do bazy
                   </Button>
                 </div>
               </TabsContent>
 
-              <TabsContent value="map" className="space-y-4">
-                <div className="aspect-square bg-slate-100 rounded-lg flex items-center justify-center relative overflow-hidden">
+              <TabsContent value="map" className="flex flex-1 flex-col space-y-4">
+                <div className="min-h-[22rem] flex-1 bg-slate-100 rounded-lg flex items-center justify-center relative overflow-hidden">
                   <MapPin className="w-12 h-12 text-slate-400" />
                   <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 p-4 gap-2">
                     {rooms.map((room) => (
@@ -302,7 +324,7 @@ export function Appliances() {
                     ))}
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-4 text-sm pb-1">
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-green-50 border-2 border-green-300 rounded" />
                     <span className="text-slate-600">Wyczyszczone</span>
@@ -465,21 +487,21 @@ export function Appliances() {
                 <div className="space-y-2">
                   <Label>Szybkie ustawienia</Label>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-4">
                     {["Espresso", "Americano", "Cappuccino", "Latte"].map(
                       (type) => (
                         <Button
                           key={type}
                           variant="outline"
                           onClick={() => setSelectedCoffeeType(type)}
-                          className={`h-auto py-4 flex flex-col transition-all duration-200 ${
+                          className={`min-h-24 py-5 flex flex-col items-center justify-center gap-2 transition-all duration-200 ${
                             selectedCoffeeType === type
                               ? "border-2 border-amber-500 bg-amber-50 shadow-md"
                               : ""
                           }`}
                         >
                           <Coffee
-                            className={`w-5 h-5 mb-2 ${
+                            className={`w-5 h-5 shrink-0 ${
                               selectedCoffeeType === type
                                 ? "text-amber-600"
                                 : ""
@@ -487,10 +509,10 @@ export function Appliances() {
                           />
 
                           <span
-                            className={`text-xs ${
+                            className={`text-sm font-semibold leading-none ${
                               selectedCoffeeType === type
-                                ? "font-semibold text-amber-700"
-                                : ""
+                                ? "text-amber-700"
+                                : "text-slate-600"
                             }`}
                           >
                             {type}

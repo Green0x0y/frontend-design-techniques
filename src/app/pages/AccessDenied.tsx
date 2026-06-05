@@ -19,7 +19,7 @@ export function AccessDenied() {
               <Lock className="w-8 h-8 text-slate-700" />
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Dostęp odmówiony</CardTitle>
+          <CardTitle className="text-2xl text-center">Odmowa dostępu</CardTitle>
           <CardDescription className="text-center">
             Musisz być zalogowany, aby uzyskać dostęp do tej strony
           </CardDescription>

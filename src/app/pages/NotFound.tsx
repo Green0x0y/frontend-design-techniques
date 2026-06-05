@@ -29,13 +29,13 @@ export function NotFound() {
           </div>
           <CardTitle className="text-3xl text-center font-bold">404</CardTitle>
           <CardDescription className="text-center">
-            Strona nie dostępna
+            Strona niedostępna
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <p className="text-slate-600 text-center">
-              Niestety, strona którą szukasz nie istnieje.
+              Niestety strona, której szukasz nie istnieje.
             </p>
             <p className="text-sm text-slate-500 text-center break-all">
               Ścieżka: <code className="bg-slate-100 px-2 py-1 rounded">{location.pathname}</code>
