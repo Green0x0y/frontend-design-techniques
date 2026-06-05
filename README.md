@@ -220,15 +220,20 @@ The design emphasizes visibility, clarity, and efficient information processing,
 
 ## Deployment
 
-### Production Environment
+The application is deployed on **Vercel** and available publicly at:
 
-### Hosting Configuration
+https://advanced-programming-techniques-mfk.vercel.app/
 
-### Build Process
+Production deployment screenshot:
 
-### Deployment Workflow
+![Production Deployment](screenshots/deployment.png)
+Deployment notes:
 
-### Public Application URL
+- Hosting platform: **Vercel**
+- Production branch: **main**
+- Build command: `npm run build`
+- Output directory: `dist`
+- Environment variables are configured in Vercel project settings (Firebase keys)
 
 ---
 
