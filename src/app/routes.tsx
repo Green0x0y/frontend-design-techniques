@@ -31,6 +31,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, Component: Dashboard },
+      { path: 'dashboard', Component: Dashboard },
       { path: 'devices', Component: Devices },
       { path: 'automations', Component: Automations },
       { path: 'security', Component: Security },
