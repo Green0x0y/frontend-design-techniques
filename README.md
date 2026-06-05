@@ -309,10 +309,52 @@ Firebase Console ->  Project Settings -> General
 
 and copy the values from the Firebase SDK configuration snippet into the `.env` file.
 
-### 4. Restart the Development Server
+### 4. Configure Firestore Database
+
+The application uses Cloud Firestore to store user profiles and role assignments.
+
+1. In the Firebase Console, open **Firestore Database**.
+2. Click **Create database** and select **Production mode** (or **Test mode** for development).
+3. Choose a region and confirm.
+4. Open the **Rules** tab and set the following security rules:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+Click **Publish** to apply the rules.
+
+### 5. Restart the Development Server
 
 After creating or modifying the `.env` file, restart the application:
 
 ```bash
 npm run dev
 ```
+
+---
+
+## User Roles
+
+The application supports two roles: **admin** and **member**. Every user who registers automatically receives the `member` role.
+
+### Granting Admin Role via Firebase Console
+`admin` role can be granted via Firebase Console
+
+
+### Admin Capabilities
+
+| Feature | admin | member |
+|---|---|---|
+| View user list | ✅ | ✅ |
+| Add new user | ✅ | ❌ |
+| Change user role | ✅ | ❌ |
+| Delete user | ✅ | ❌ |
+| All other app features | ✅ | ✅ |

@@ -14,9 +14,11 @@ import { Home, AlertCircle, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 import {
   auth,
+  db,
   firebaseConfigError,
   isFirebaseConfigured,
   trackEvent,
@@ -52,7 +54,7 @@ export function Register() {
       return;
     }
 
-    if (!auth || !isFirebaseConfigured) {
+    if (!auth || !db || !isFirebaseConfigured) {
       setError(firebaseConfigError ?? "Firebase nie jest skonfigurowany");
       return;
     }
@@ -66,6 +68,14 @@ export function Register() {
 
       await updateProfile(userCredential.user, {
         displayName: name,
+      });
+
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        uid: userCredential.user.uid,
+        email,
+        name,
+        role: "member",
+        createdAt: serverTimestamp(),
       });
 
       void trackEvent("sign_up", { method: "email_password" });

@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 import {
   getAnalytics,
   isSupported,
@@ -37,6 +38,7 @@ export const firebaseConfigError = isFirebaseConfigured
 
 const app = isFirebaseConfigured ? initializeApp(firebaseConfig) : null;
 export const auth: Auth | null = app ? getAuth(app) : null;
+export const db: Firestore | null = app ? getFirestore(app) : null;
 
 let analyticsInstance: Analytics | null = null;
 

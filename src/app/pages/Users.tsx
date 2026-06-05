@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { UserPlus, Mail, Shield, UserCheck, Trash2 } from "lucide-react";
-import { users as initialUsers } from "../data/mockData";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,19 @@ import {
 } from "../components/ui/select";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import { toast } from "sonner";
+import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
+import { FirebaseError } from "firebase/app";
+import { db } from "../../firebase";
+
+type UserRole = "admin" | "member";
+
+type UserItem = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatar: string;
+};
 
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -33,18 +46,90 @@ function initialsFromName(name: string): string {
 }
 
 export function Users() {
-  const [usersList, setUsersList] = useState(initialUsers);
+  const { isAdmin } = useAuth();
+  const [usersList, setUsersList] = useState<UserItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [newUserName, setNewUserName] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
-  const [newUserRole, setNewUserRole] = useState<"admin" | "member">("member");
+  const [newUserRole, setNewUserRole] = useState<UserRole>("member");
 
-  const deleteUser = (id: string) => {
+  const loadUsers = async () => {
+    if (!db) {
+      setUsersList([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const snapshot = await getDocs(collection(db, "users"));
+      const loadedUsers: UserItem[] = snapshot.docs.map((d) => {
+        const data = d.data() as {
+          name?: string;
+          displayName?: string;
+          email?: string;
+          role?: UserRole;
+          avatar?: string;
+        };
+
+        const resolvedName = data.name || data.displayName || data.email || "Użytkownik";
+        return {
+          id: d.id,
+          name: resolvedName,
+          email: data.email || "brak@email",
+          role: data.role === "admin" ? "admin" : "member",
+          avatar: data.avatar || initialsFromName(resolvedName),
+        };
+      });
+
+      setUsersList(loadedUsers);
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        toast.error(`Nie udało się pobrać użytkowników (${error.code})`);
+      } else {
+        toast.error("Nie udało się pobrać użytkowników z Firestore");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadUsers();
+  }, []);
+
+  const deleteUser = async (id: string) => {
+    if (!db) return;
+
+    try {
+      await deleteDoc(doc(db, "users", id));
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        toast.error(`Nie udało się usunąć użytkownika (${error.code})`);
+      } else {
+        toast.error("Nie udało się usunąć użytkownika");
+      }
+      return;
+    }
+
     setUsersList((prev) => prev.filter((user) => user.id !== id));
     toast.success("Użytkownik został usunięty");
   };
 
-  const changeRole = (id: string, newRole: "admin" | "member") => {
+  const changeRole = async (id: string, newRole: UserRole) => {
+    if (!db) return;
+
+    try {
+      await updateDoc(doc(db, "users", id), { role: newRole });
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        toast.error(`Nie udało się zmienić roli (${error.code})`);
+      } else {
+        toast.error("Nie udało się zmienić roli użytkownika");
+      }
+      return;
+    }
+
     setUsersList((prev) =>
       prev.map((user) => (user.id === id ? { ...user, role: newRole } : user)),
     );
@@ -73,24 +158,45 @@ export function Users() {
       toast.error("Użytkownik z tym adresem już istnieje");
       return;
     }
-    const maxU = usersList.reduce((max, u) => {
-      const m = /^u(\d+)$/.exec(u.id);
-      return m ? Math.max(max, parseInt(m[1], 10)) : max;
-    }, 0);
-    const nextId = maxU > 0 ? `u${maxU + 1}` : `u${usersList.length + 1}`;
-    setUsersList((prev) => [
-      ...prev,
-      {
-        id: nextId,
-        name,
-        email,
-        role: newUserRole,
-        avatar: initialsFromName(name),
-      },
-    ]);
-    setInviteDialogOpen(false);
-    resetInviteForm();
-    toast.success("Użytkownik został dodany");
+    const id = `invited-${Date.now()}`;
+
+    const createUser = async () => {
+      if (!db) {
+        toast.error("Firestore nie jest skonfigurowany");
+        return;
+      }
+
+      try {
+        await setDoc(doc(db, "users", id), {
+          name,
+          email,
+          role: newUserRole,
+          avatar: initialsFromName(name),
+        });
+
+        setUsersList((prev) => [
+          ...prev,
+          {
+            id,
+            name,
+            email,
+            role: newUserRole,
+            avatar: initialsFromName(name),
+          },
+        ]);
+        setInviteDialogOpen(false);
+        resetInviteForm();
+        toast.success("Użytkownik został dodany");
+      } catch (error) {
+        if (error instanceof FirebaseError) {
+          toast.error(`Nie udało się dodać użytkownika (${error.code})`);
+        } else {
+          toast.error("Nie udało się dodać użytkownika do Firestore");
+        }
+      }
+    };
+
+    void createUser();
   };
 
   return (
@@ -106,7 +212,7 @@ export function Users() {
           </p>
         </div>
 
-        <Dialog
+        {isAdmin && <Dialog
           open={inviteDialogOpen}
           onOpenChange={(open) => {
             setInviteDialogOpen(open);
@@ -172,7 +278,7 @@ export function Users() {
               </Button>
             </div>
           </DialogContent>
-        </Dialog>
+        </Dialog>}
       </div>
 
       {/* Role Info Cards */}
@@ -237,6 +343,10 @@ export function Users() {
           </h2>
         </div>
 
+        {loading && (
+          <div className="p-6 text-sm text-slate-500">Ładowanie użytkowników...</div>
+        )}
+
         <div className="divide-y divide-slate-200">
           {usersList.map((user) => (
             <div
@@ -253,7 +363,7 @@ export function Users() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-semibold text-slate-900">
-                      {user.displayName || user.email}
+                      {user.name || user.email}
                     </h3>
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -268,31 +378,33 @@ export function Users() {
                   <p className="text-sm text-slate-600">{user.email}</p>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Select
-                    value={user.role}
-                    onValueChange={(value: "admin" | "member") =>
-                      changeRole(user.id, value)
-                    }
-                  >
-                    <SelectTrigger className="w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Administrator</SelectItem>
-                      <SelectItem value="member">Domownik</SelectItem>
-                    </SelectContent>
-                  </Select>
+                {isAdmin && (
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Select
+                      value={user.role}
+                      onValueChange={(value: "admin" | "member") =>
+                        changeRole(user.id, value)
+                      }
+                    >
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Administrator</SelectItem>
+                        <SelectItem value="member">Domownik</SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteUser(user.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteUser(user.id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
