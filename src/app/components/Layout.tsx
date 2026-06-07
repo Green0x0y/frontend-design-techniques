@@ -96,7 +96,7 @@ export function Layout() {
               variant="ghost"
               className="w-full mt-2 justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
             >
-              <LogOut className="w-4 h-4 mr-2" />
+              <LogOut className="w-4 h-4 mr-2 rotate-180" />
               Wyloguj
             </Button>
           </div>
@@ -177,7 +177,7 @@ export function Layout() {
                   variant="ghost"
                   className="w-full mt-2 justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
+                  <LogOut className="w-4 h-4 mr-2 rotate-180" />
                   Wyloguj
                 </Button>
               </div>
