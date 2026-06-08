@@ -1,5 +1,5 @@
 import { RouterProvider } from "react-router";
-import { router } from "./routes.tsx";
+import { router } from "./routes";
 import { Toaster } from "./components/ui/sonner";
 import { AuthProvider } from "./contexts/AuthContext";
 import { useEffect } from "react";
