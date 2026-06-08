@@ -1,4 +1,4 @@
-# SmartHome
+# SmartHome 
 
 SmartHome is a web-based smart home management platform designed to centralize the control of connected devices, household automation, security monitoring, and user management within a single interface.
 
