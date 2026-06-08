@@ -16,6 +16,7 @@ import {
   Settings
 } from 'lucide-react';
 import { devices, scenes } from '../data/mockData';
+import { DeviceStatusBadge } from '../components/DeviceStatusBadge';
 
 export function Dashboard() {
   const [deviceStates, setDeviceStates] = useState(devices);
@@ -175,17 +176,8 @@ export function Dashboard() {
                   }`}>
                     <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-slate-600'}`} />
                   </div>
-                  
-                  <button
-                    onClick={() => toggleDevice(device.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      isActive
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                    }`}
-                  >
-                    {isActive ? 'Włączone' : 'Wyłączone'}
-                  </button>
+
+                  <DeviceStatusBadge isActive={isActive} onToggle={() => toggleDevice(device.id)} />
                 </div>
                 
                 <h3 className="font-semibold text-slate-900 mb-1">{device.name}</h3>
