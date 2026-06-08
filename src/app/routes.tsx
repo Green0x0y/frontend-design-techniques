@@ -12,6 +12,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { NotFound } from './pages/NotFound';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AnalyticsListener } from './components/AnalyticsListener';
 
 export const router = createBrowserRouter([
   {
@@ -25,9 +26,10 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <ProtectedRoute>
-        <Layout />
-      </ProtectedRoute>
+        <ProtectedRoute>
+          <AnalyticsListener />
+          <Layout />
+        </ProtectedRoute>
     ),
     children: [
       { index: true, Component: Dashboard },
