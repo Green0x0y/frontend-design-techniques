@@ -180,7 +180,7 @@ export function Dashboard() {
                     onClick={() => toggleDevice(device.id)}
                     className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       isActive
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
                         : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                     }`}
                   >
