@@ -1,3 +1,24 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Cursor pointer for all interactive elements — overrides browser/Tailwind preflight reset */
+button:not([disabled]),
+[role="button"]:not([disabled]),
+[type="button"]:not([disabled]),
+[type="submit"]:not([disabled]),
+[type="reset"]:not([disabled]) {
+  cursor: pointer;
+}
+
+/* Focus visible for mouse interactions on native range inputs */
+input[type='range']:focus {
+  outline: 3px solid color-mix(in oklch, var(--ring) 50%, transparent);
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+
+input[type='range']:hover {
+  opacity: 0.85;
+  cursor: pointer;
+}

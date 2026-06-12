@@ -74,7 +74,10 @@ export function Layout() {
           </nav>
 
           <div className="p-4 border-t border-slate-200">
-            <div className="flex items-center gap-3 px-4 py-3">
+            <Link
+              to="/users"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-100 transition-colors"
+            >
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
                 {user?.displayName
                   ? user.displayName
@@ -90,7 +93,7 @@ export function Layout() {
                 </p>
                 <p className="text-xs text-slate-500">{user?.email}</p>
               </div>
-            </div>
+            </Link>
             <Button
               onClick={handleLogout}
               variant="ghost"
@@ -111,7 +114,7 @@ export function Layout() {
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg hover:bg-slate-100"
+            className="p-2 rounded-lg hover:bg-slate-100 cursor-pointer"
           >
             {mobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -157,7 +160,11 @@ export function Layout() {
               </nav>
 
               <div className="p-4 border-t border-slate-200">
-                <div className="flex items-center gap-3 px-4 py-3">
+                <Link
+                  to="/users"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-100 transition-colors"
+                >
                   <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
                     {user?.displayName
                       .split(" ")
@@ -171,7 +178,7 @@ export function Layout() {
                     </p>
                     <p className="text-xs text-slate-500">{user?.email}</p>
                   </div>
-                </div>
+                </Link>
                 <Button
                   onClick={handleLogout}
                   variant="ghost"

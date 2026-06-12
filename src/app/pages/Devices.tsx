@@ -386,7 +386,7 @@ export function Devices() {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium"
+                      className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium cursor-pointer"
                       onClick={() => {
                         setDeviceList((prev) =>
                           prev.map((d) =>
@@ -400,7 +400,7 @@ export function Devices() {
                       -
                     </button>
                     <button
-                      className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium"
+                      className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium cursor-pointer"
                       onClick={() => {
                         setDeviceList((prev) =>
                           prev.map((d) =>

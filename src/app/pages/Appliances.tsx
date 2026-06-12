@@ -497,7 +497,7 @@ export function Appliances() {
                           className={`min-h-24 py-5 flex flex-col items-center justify-center gap-2 transition-all duration-200 ${
                             selectedCoffeeType === type
                               ? "border-2 border-amber-500 bg-amber-50 shadow-md"
-                              : ""
+                              : "border-slate-200 text-slate-700 hover:border-amber-300 hover:bg-amber-50/60"
                           }`}
                         >
                           <Coffee

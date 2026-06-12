@@ -306,29 +306,7 @@ Firebase Console -> Project Settings -> General
 
 Następnie skopiuj wartości z konfiguracji Firebase SDK i wklej je do pliku `.env`.
 
-### 4. Konfiguracja bazy danych Firestore
-
-Aplikacja wykorzystuje usługę Cloud Firestore do przechowywania profili użytkowników oraz przypisanych ról.
-
-1. W konsoli Firebase przejdź do sekcji **Firestore Database**.
-2. Kliknij **Create database** i wybierz tryb **Production mode** (lub **Test mode** podczas tworzenia prototypu).
-3. Wybierz region i zatwierdź konfigurację.
-4. Otwórz zakładkę **Rules** i ustaw następujące reguły bezpieczeństwa:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
-
-Kliknij przycisk **Publish**, aby zastosować reguły.
-
-### 5. Ponowne uruchomienie aplikacji
+### 4. Ponowne uruchomienie aplikacji
 
 Po utworzeniu lub modyfikacji pliku `.env` uruchom aplikację ponownie:
 

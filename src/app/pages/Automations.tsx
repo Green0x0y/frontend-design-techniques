@@ -84,6 +84,11 @@ export function Automations() {
     );
   };
 
+  const deleteScene = (id: string) => {
+    setScenesList((prev) => prev.filter((scene) => scene.id !== id));
+    toast.success('Scena została usunięta');
+  };
+
   const deleteAutomation = (id: string) => {
     setAutomationsList((prev) => prev.filter((auto) => auto.id !== id));
     toast.success('Automatyzacja została usunięta');
@@ -134,11 +139,144 @@ export function Automations() {
 
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto">
-      <div className="mb-8">
+      <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Automatyzacje i sceny</h1>
           <p className="text-slate-600">Twórz sceny i reguły automatyzacji dla swojego domu</p>
         </div>
+
+        {activeTab === 'scenes' ? (
+          <Dialog
+            open={sceneDialogOpen}
+            onOpenChange={(open) => {
+              setSceneDialogOpen(open);
+              if (!open) resetSceneForm();
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Nowa scena
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Utwórz nową scenę</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="scene-name">Nazwa sceny</Label>
+                  <Input
+                    id="scene-name"
+                    placeholder="np. Wieczór filmowy"
+                    value={newSceneName}
+                    onChange={(e) => setNewSceneName(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="scene-description">Opis</Label>
+                  <Input
+                    id="scene-description"
+                    placeholder="Krótki opis sceny"
+                    value={newSceneDescription}
+                    onChange={(e) => setNewSceneDescription(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="scene-icon">Ikona</Label>
+                  <Select value={newSceneIcon} onValueChange={setNewSceneIcon}>
+                    <SelectTrigger id="scene-icon">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Moon">Księżyc</SelectItem>
+                      <SelectItem value="Sun">Słońce</SelectItem>
+                      <SelectItem value="Home">Dom</SelectItem>
+                      <SelectItem value="Film">Film</SelectItem>
+                      <SelectItem value="LogOut">Wyjście</SelectItem>
+                      <SelectItem value="Zap">Błyskawica</SelectItem>
+                      <SelectItem value="Shield">Tarcza</SelectItem>
+                      <SelectItem value="Leaf">Liść</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Wybierz urządzenia</Label>
+                  <div className="space-y-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3">
+                    {devicesCatalog.map((d) => (
+                      <div key={d.id} className="flex items-center justify-between gap-2">
+                        <span className="text-sm">
+                          {d.room} — {d.name}
+                        </span>
+                        <Switch
+                          checked={!!sceneDeviceIds[d.id]}
+                          onCheckedChange={(checked) =>
+                            setSceneDeviceIds((prev) => ({ ...prev, [d.id]: checked }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <Button type="button" className="w-full" onClick={handleCreateScene}>
+                  Utwórz scenę
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        ) : (
+          <Dialog
+            open={ruleDialogOpen}
+            onOpenChange={(open) => {
+              setRuleDialogOpen(open);
+              if (!open) resetRuleForm();
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Nowa reguła
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Utwórz nową regułę automatyzacji</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="auto-name">Nazwa reguły</Label>
+                  <Input
+                    id="auto-name"
+                    placeholder="np. Automatyczne światło wieczorem"
+                    value={newRuleName}
+                    onChange={(e) => setNewRuleName(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="auto-trigger">Wyzwalacz (warunek)</Label>
+                  <Input
+                    id="auto-trigger"
+                    placeholder="np. Gdy zapadnie zmrok"
+                    value={newRuleTrigger}
+                    onChange={(e) => setNewRuleTrigger(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="auto-action">Akcja</Label>
+                  <Input
+                    id="auto-action"
+                    placeholder="np. Włącz światło w salonie"
+                    value={newRuleAction}
+                    onChange={(e) => setNewRuleAction(e.target.value)}
+                  />
+                </div>
+                <Button type="button" className="w-full" onClick={handleCreateRule}>
+                  Utwórz regułę
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -148,87 +286,6 @@ export function Automations() {
         </TabsList>
 
         <TabsContent value="scenes" className="space-y-6">
-          <div className="flex justify-end">
-            <Dialog
-              open={sceneDialogOpen}
-              onOpenChange={(open) => {
-                setSceneDialogOpen(open);
-                if (!open) resetSceneForm();
-              }}
-            >
-              <DialogTrigger asChild>
-                <Button className="flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  Nowa scena
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Utwórz nową scenę</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="scene-name">Nazwa sceny</Label>
-                    <Input
-                      id="scene-name"
-                      placeholder="np. Wieczór filmowy"
-                      value={newSceneName}
-                      onChange={(e) => setNewSceneName(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="scene-description">Opis</Label>
-                    <Input
-                      id="scene-description"
-                      placeholder="Krótki opis sceny"
-                      value={newSceneDescription}
-                      onChange={(e) => setNewSceneDescription(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="scene-icon">Ikona</Label>
-                    <Select value={newSceneIcon} onValueChange={setNewSceneIcon}>
-                      <SelectTrigger id="scene-icon">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Moon">Księżyc</SelectItem>
-                        <SelectItem value="Sun">Słońce</SelectItem>
-                        <SelectItem value="Home">Dom</SelectItem>
-                        <SelectItem value="Film">Film</SelectItem>
-                        <SelectItem value="LogOut">Wyjście</SelectItem>
-                        <SelectItem value="Zap">Błyskawica</SelectItem>
-                        <SelectItem value="Shield">Tarcza</SelectItem>
-                        <SelectItem value="Leaf">Liść</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Wybierz urządzenia</Label>
-                    <div className="space-y-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3">
-                      {devicesCatalog.map((d) => (
-                        <div key={d.id} className="flex items-center justify-between gap-2">
-                          <span className="text-sm">
-                            {d.room} — {d.name}
-                          </span>
-                          <Switch
-                            checked={!!sceneDeviceIds[d.id]}
-                            onCheckedChange={(checked) =>
-                              setSceneDeviceIds((prev) => ({ ...prev, [d.id]: checked }))
-                            }
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <Button type="button" className="w-full" onClick={handleCreateScene}>
-                    Utwórz scenę
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {scenesList.map((scene) => {
               const Icon = getIconComponent(scene.icon);
@@ -243,6 +300,13 @@ export function Automations() {
                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                       <Icon className="w-6 h-6 text-blue-600" />
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => deleteScene(scene.id)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
 
                   <h3 className="font-semibold text-slate-900 mb-2">{scene.name}</h3>
@@ -267,60 +331,6 @@ export function Automations() {
         </TabsContent>
 
         <TabsContent value="automations" className="space-y-6">
-          <div className="flex justify-end">
-            <Dialog
-              open={ruleDialogOpen}
-              onOpenChange={(open) => {
-                setRuleDialogOpen(open);
-                if (!open) resetRuleForm();
-              }}
-            >
-              <DialogTrigger asChild>
-                <Button className="flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  Nowa reguła
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Utwórz nową regułę automatyzacji</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="auto-name">Nazwa reguły</Label>
-                    <Input
-                      id="auto-name"
-                      placeholder="np. Automatyczne światło wieczorem"
-                      value={newRuleName}
-                      onChange={(e) => setNewRuleName(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="auto-trigger">Wyzwalacz (warunek)</Label>
-                    <Input
-                      id="auto-trigger"
-                      placeholder="np. Gdy zapadnie zmrok"
-                      value={newRuleTrigger}
-                      onChange={(e) => setNewRuleTrigger(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="auto-action">Akcja</Label>
-                    <Input
-                      id="auto-action"
-                      placeholder="np. Włącz światło w salonie"
-                      value={newRuleAction}
-                      onChange={(e) => setNewRuleAction(e.target.value)}
-                    />
-                  </div>
-                  <Button type="button" className="w-full" onClick={handleCreateRule}>
-                    Utwórz regułę
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
           <div className="space-y-4">
             {automationsList.map((automation) => {
               const Icon = getIconComponent(automation.icon);
@@ -354,7 +364,7 @@ export function Automations() {
                           <button
                             type="button"
                             onClick={() => deleteAutomation(automation.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
