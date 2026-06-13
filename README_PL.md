@@ -188,29 +188,79 @@ Projekt skupia się na przejrzystości, widoczności oraz efektywnym przekazywan
 
 ## Google Analytics
 
+Google Analytics zostało zintegrowane z aplikacją w celu śledzenia aktywności użytkowników w głównych widokach aplikacji. Dane przedstawione poniżej zostały zebrane podczas krótkiego okresu testowego (6–13 czerwca 2026) z udziałem niewielkiej grupy użytkowników testowych. Wyniki potwierdzają poprawne działanie integracji i umożliwiają podstawową analizę zachowania użytkowników w aplikacji.
+
 ### Przegląd ruchu
+
+Raport przeglądowy potwierdził, że Google Analytics aktywnie zbiera dane z wdrożonej aplikacji. W panelu widoczni byli aktywni użytkownicy, liczba wyświetleń stron oraz zdarzenia rejestrowane w czasie rzeczywistym.
+
+![Przegląd ruchu w Google Analytics](screenshots/ga-home-overview.png)
 
 ### Pozyskiwanie użytkowników
 
+Ruch do aplikacji pochodził głównie z bezpośrednich źródeł, co jest typowe dla środowiska testowego, w którym użytkownicy wchodzą na stronę za pomocą udostępnionego linku.
+
+![Pozyskiwanie użytkowników w Google Analytics](screenshots/ga-acquisition.png)
+
 ### Zaangażowanie użytkowników
+
+Raport zaangażowania wykazał wyświetlenia stron oraz interakcje użytkowników w całej aplikacji. Użytkownicy przechodzili między wieloma widokami podczas swoich sesji, co potwierdziło poprawne śledzenie routingu SPA.
+
+![Zaangażowanie użytkowników w Google Analytics](screenshots/ga-engagement.png)
 
 ### Najczęściej odwiedzane strony
 
+Raport stron potwierdził, że wszystkie główne moduły aplikacji były odwiedzane podczas testów. Do najczęściej odwiedzanych ścieżek należały: `/`, `/appliances`, `/automations`, `/devices`, `/security`, `/users`, `/statistics`, `/notifications` oraz `/login`.
+
+![Najczęściej odwiedzane strony w Google Analytics](screenshots/ga-pages.png)
+
 ### Kluczowe wnioski
+
+- Google Analytics zostało poprawnie zintegrowane i zbierało dane z wdrożonej aplikacji.
+- Routing SPA był prawidłowo odzwierciedlony w raportach stron.
+- Wszystkie główne moduły aplikacji były odwiedzane w trakcie okresu testowego.
+- Ruch pochodził głównie z bezpośrednich źródeł, co jest typowe dla środowiska testowego.
+- Dane mają charakter testowy i służą potwierdzeniu integracji oraz podstawowej analizie zachowań użytkowników.
 
 ---
 
 ## Analiza Hotjar
 
+Hotjar (za pośrednictwem Contentsquare) został zintegrowany z aplikacją przy użyciu skryptu śledzącego dodanego do pliku `index.html`. Narzędzie zbierało dane sesji podczas okresu testowego. Poniższy przegląd potwierdza, że integracja była aktywna i sesje zostały zarejestrowane.
+
+![Przegląd sesji w Hotjar](screenshots/hotjar-overview.png)
+
 ### Mapy cieplne
+
+Mapa cieplna kliknięć została wygenerowana dla widoku Dashboard, który stanowi główny ekran aplikacji. Mapa wskazuje obszary aktywności na głównym ekranie, w tym menu nawigacyjne oraz karty urządzeń.
+
+![Mapa cieplna Hotjar](screenshots/hotjar-heatmap.png)
 
 ### Nagrania sesji użytkowników
 
+Nagrania sesji były dostępne dla ograniczonej liczby sesji. Ze względu na ustawienia prywatności treść tekstowa w nagraniach była maskowana. Nagrania potwierdziły, że użytkownicy poruszali się między głównymi modułami aplikacji.
+
+![Nagrania sesji w Hotjar](screenshots/hotjar-recordings.png)
+
 ### Mapy przewijania
+
+Mapa przewijania została wygenerowana dla widoku Dashboard i pokazuje, jak daleko użytkownicy przewijali główny ekran aplikacji podczas swoich sesji.
+
+![Mapa przewijania Hotjar](screenshots/hotjar-scrollmap.png)
 
 ### Obserwacje zachowań użytkowników
 
+- Użytkownicy odwiedzali różne sekcje aplikacji podczas swoich sesji, w tym Urządzenia, AGD, Automatyzacje, Bezpieczeństwo i Statystyki.
+- Dashboard pokazał widoczną aktywność wokół nawigacji i szybkich akcji, natomiast widok AGD należał do najczęściej odwiedzanych stron.
+- Menu boczne było głównym sposobem nawigacji między sekcjami aplikacji.
+- Ze względu na ograniczoną liczbę sesji testowych obserwacje mają charakter orientacyjny.
+
 ### Usprawnienia projektu na podstawie uzyskanych wyników
+
+- Najczęściej odwiedzane sekcje (Urządzenia, AGD) mogłyby zostać lepiej wyeksponowane na ekranie głównym.
+- Aktywne stany przełączników i przycisków akcji zostały ulepszone poprzez dodanie efektów hover na podstawie wniosków z analizy.
+- Dalsze testy z większą grupą użytkowników dostarczyłyby bardziej miarodajnych danych z heatmap i nagrań sesji.
+- Przy większej liczbie sesji analiza głębokości przewijania mogłaby dostarczyć dodatkowych wskazówek projektowych.
 
 ---
 

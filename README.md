@@ -194,29 +194,79 @@ The design emphasizes visibility, clarity, and efficient information processing,
 
 ## Google Analytics
 
+Google Analytics was integrated into the application to track user activity across the main application views. The data presented below was collected during a short testing period (June 6–13, 2026) with a small group of test users. The results confirm that the integration works correctly and provide a basic overview of user behavior within the application.
+
 ### Traffic Overview
+
+The overview report confirmed that Google Analytics was actively collecting data from the deployed application. Active users, page views, and real-time events were visible in the dashboard.
+
+![Google Analytics traffic overview](screenshots/ga-home-overview.png)
 
 ### User Acquisition
 
+Traffic to the application came primarily from direct sources, which is expected in a test environment where users access the app via a shared link.
+
+![Google Analytics user acquisition](screenshots/ga-acquisition.png)
+
 ### User Engagement
+
+The engagement report showed page views and user interactions across the application. Users navigated between multiple views during their sessions, confirming that the SPA routing was correctly tracked.
+
+![Google Analytics user engagement](screenshots/ga-engagement.png)
 
 ### Most Visited Pages
 
+The pages report confirmed that all main application modules were visited during testing. The most frequently accessed paths included `/`, `/appliances`, `/automations`, `/devices`, `/security`, `/users`, `/statistics`, `/notifications`, and `/login`.
+
+![Google Analytics most visited pages](screenshots/ga-pages.png)
+
 ### Key Insights
+
+- Google Analytics was successfully integrated and collected data from the deployed application.
+- SPA routing was correctly reflected in the page reports.
+- All main application modules were visited during the testing period.
+- Traffic came primarily from direct sources, which is typical for a test environment.
+- The data is of a testing nature and serves to confirm the integration and provide a basic behavioral overview.
 
 ---
 
 ## Hotjar Analysis
 
+Hotjar (via Contentsquare) was integrated into the application using a tracking script added to the `index.html` file. The tool collected session data during the testing period. The overview below confirms that the integration was active and sessions were recorded.
+
+![Hotjar session overview](screenshots/hotjar-overview.png)
+
 ### Heatmaps
+
+A click heatmap was generated for the Dashboard view, which is the main screen of the application. The heatmap indicates areas of interaction on the main screen, including the navigation menu and device cards.
+
+![Hotjar heatmap](screenshots/hotjar-heatmap.png)
 
 ### Session Recordings
 
+Session recordings were available for a limited subset of sessions. Due to privacy settings, text content in the recordings was masked. The recordings confirmed that users navigated between the main application modules.
+
+![Hotjar session recordings](screenshots/hotjar-recordings.png)
+
 ### Scroll Maps
+
+A scroll map was generated for the Dashboard view, showing how far users scrolled through the main screen during their sessions.
+
+![Hotjar scroll map](screenshots/hotjar-scrollmap.png)
 
 ### User Behavior Observations
 
+- Users visited multiple application sections during their sessions, including Devices, Appliances, Automations, Security, and Statistics.
+- The Dashboard showed visible interaction with navigation and quick action elements, while the Appliances view was one of the most frequently visited pages.
+- Navigation via the sidebar menu was the primary way users moved between sections.
+- Due to the limited number of test sessions, the observations are indicative rather than conclusive.
+
 ### Design Improvements Based on Findings
+
+- The most frequently visited sections (Devices, Appliances) could be given more prominent placement on the Dashboard.
+- Active states for toggles and action buttons were improved by adding hover effects based on the analysis findings.
+- Further testing with a larger group of users would provide more reliable heatmap and session replay data.
+- With a larger number of sessions, scroll depth analysis could provide additional design insights.
 
 ---
 
