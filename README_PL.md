@@ -1,4 +1,4 @@
-# SmartHome
+# SmartHome 
 
 SmartHome to internetowa platforma do zarządzania inteligentnym domem, zaprojektowana w celu scentralizowania kontroli nad połączonymi urządzeniami, automatyzacją domową, monitoringiem bezpieczeństwa oraz zarządzaniem użytkownikami w ramach jednego interfejsu.
 
